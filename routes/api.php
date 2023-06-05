@@ -22,8 +22,9 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/upload-katalog', [AuthController::class, 'uploadKatalog']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-passsword', [AuthController::class, 'forgotPasssword']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPasssword']);
 Route::post('/absensi/izin', [AbsensiController::class, 'izin']);
 Route::post('/absensi/sakit', [AbsensiController::class, 'sakit']);
 Route::post('/absensi/dinas', [AbsensiController::class, 'dinas']);

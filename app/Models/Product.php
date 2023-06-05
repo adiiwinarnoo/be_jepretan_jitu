@@ -15,8 +15,12 @@ class Product extends Model
         'id',
         'id_user',
         'foto',
+        'foto_two',
+        'foto_three',
         'judul_product',
         'harga_product',
         'nomor_whatsapp',
+        'domisili',
+        'deskripsi',
     ];
 }
