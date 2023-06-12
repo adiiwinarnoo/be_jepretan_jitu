@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\DetailUser;
+use App\Models\DetailProduct;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -221,6 +222,116 @@ class AuthController extends Controller
                 ], 401);
             }
         
+        }
+    }
+
+    public function review(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id_user' => 'required',
+            'id_product' => 'required',
+            'nama_user' => 'required',
+            'review' => 'required',
+            'rating' => 'required'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'user' => $validator->errors()
+            ],401);
+        }
+
+        $user = DetailProduct::where('id_user', $request->id_user)->first();
+        
+        if($user) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'anda sudah memberikan ulasan'
+                ],200);
+        }else {
+                $detailProduct = DetailProduct::create([
+                'id_product' => $request->input('id_product'),
+                'id_user' => $request->input('id_user'),
+                'nama_user' => $request->input('nama_user'),
+                'review' => $request->input('review'),
+                'rating' => $request->input('rating'),
+            ]);
+
+            if ($detailProduct) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => "Berhasil menambahkan Review",
+                    'dataDetailProduct' => $detailProduct,
+                ], 200);
+            }else {
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Gagal menambahkan Review"                                         
+                ], 401);
+            }
+        
+        }
+    }
+
+    public function getReview($id_product) {
+        $review = DetailProduct::select('detail_foto_product.id','detail_foto_product.id_product','detail_foto_product.id_user','detail_foto_product.nama_user','detail_foto_product.review','detail_foto_product.rating','users.foto')
+                    ->join('users', 'users.id', 'detail_foto_product.id_user')
+                    ->where('detail_foto_product.id_product','=',$id_product)
+                    ->get();
+        // dd($izin);
+
+        if($review->isEmpty()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Review'                                     
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Review',
+                'dataReview' => $review
+            ], 200);
+        }
+    }
+
+    public function getKatalog() {
+        $katalogAll = Product::select('product.id','product.id_user','users.nama', 'product.foto', 'product.judul_product','product.harga_product')
+                    ->join('users', 'users.id', 'product.id_user')
+                    ->get();
+        // dd($izin);
+
+        if($katalogAll) {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Katalog',
+                'dataKatalog' => $katalogAll
+            ], 200);
+        }else {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Katalog'                                     
+            ], 200);
+        }
+    }
+
+    public function getKatalogById($id_user) {
+        $katalogAll = Product::select('product.id','product.id_user','users.nama', 'product.foto','product.foto_two','product.foto_three', 'product.judul_product','product.harga_product','product.domisili','product.deskripsi','product.nomor_whatsapp')
+                    ->join('users', 'users.id', 'product.id_user')
+                    ->where('users.id','=',$id_user)
+                    ->get();
+        // var_dump($katalogAll);
+
+        if($katalogAll->isEmpty()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Katalog'                                     
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Katalog',
+                'dataKatalog' => $katalogAll
+            ], 200);
         }
     }
 }
