@@ -34,7 +34,7 @@ Route::post('/absensi/checkout', [AbsensiController::class, 'checkout']);
 Route::post('/absensi/izinApprove', [AbsensiController::class, 'izinApprove']);
 Route::post('/absensi/izinApprove_', [AbsensiController::class, 'izinApprove_']);
 Route::get('/absensi/historyr/{date_now}', [AbsensiController::class, 'absensiHis']);
-Route::get('/profile/{id}', [UsersController::class, 'getProfile']);
+Route::get('/profile/{id}', [AuthController::class, 'getProfile']);
 Route::post('/profile-update/{id}', [UsersController::class, 'updateProfile']);
 Route::get('/absensi/izinList', [AbsensiController::class, 'izinList']);
 Route::get('/absensi/historyList', [AbsensiController::class, 'absensiHisList']);

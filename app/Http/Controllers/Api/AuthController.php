@@ -334,4 +334,20 @@ class AuthController extends Controller
             ], 200);
         }
     }
+
+    public function getProfile($id) {
+        $profile = User::find($id);
+
+        if($profile) {
+            return response()->json([
+                'status' => 1,
+                'message' => "data profile ditemukan",
+                'dataProfile' => $profile,
+            ], 200);
+        }else {
+            return response()->json([
+                'status' => 0                                           
+            ], 401);
+        }
+    }
 }
