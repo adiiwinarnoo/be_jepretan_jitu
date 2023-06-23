@@ -448,4 +448,70 @@ class AuthController extends Controller
             ], 401);
         }
     }
+
+    public function getPayment() {
+        $paymentAll = Transaksi::select('transaksi.id','transaksi.id_user','transaksi.tanggal','transaksi.alamat','transaksi.bukti_pembayaran','transaksi.status','users.nama','users.email','product.judul_product','product.harga_product')
+                    ->join('users', 'users.id', 'transaksi.id_user')
+                    ->join('product','product.id','transaksi.id_product')
+                    ->where('transaksi.status','=','sudah transfer')
+                    ->get();
+        // var_dump($katalogAll);
+
+        if($paymentAll->isEmpty()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Payment'                                     
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Payment',
+                'dataPayment' => $paymentAll
+            ], 200);
+        }
+    }
+
+    public function getPaymentFotoGrapher() {
+        $paymentAll = Transaksi::select('transaksi.id','transaksi.id_user','transaksi.tanggal','transaksi.alamat','transaksi.bukti_pembayaran','transaksi.status','users.nama','users.email','product.judul_product','product.harga_product')
+                    ->join('users', 'users.id', 'transaksi.id_user')
+                    ->join('product','product.id','transaksi.id_product')
+                    ->where('transaksi.status','=','pembayaran berhasil')
+                    ->get();
+        // var_dump($katalogAll);
+
+        if($paymentAll->isEmpty()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Payment'                                     
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Payment',
+                'dataPaymentFoto' => $paymentAll
+            ], 200);
+        }
+    }
+
+    public function updatePayment(Request $request, $id) {
+
+        $update = DB::table('transaksi')->where('id', $id)->update([
+            'status'      => $request->status
+        ]);
+
+        if($update) {
+            $updatedProfile = DB::table('transaksi')->where('id', $id)->first();
+            return response()->json([
+                'message' => 'Data Berhasil Di-Update',
+                'status' => 1,
+                'statusChange' => $updatedProfile
+            ], 200);
+        }else {
+            return response()->json([
+                'message' => 'Data Gagal Di-Update',
+                'status' => 0                                        
+            ], 200);
+        }
+        
+    }
 }
