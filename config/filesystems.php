@@ -45,7 +45,7 @@ return [
 
         'upload' => [
             'driver' => 'local',
-            'root' => public_path('images/absensi/avatar')
+            'root' => public_path('images/jasa/avatar')
         ],
 
         'product' => [

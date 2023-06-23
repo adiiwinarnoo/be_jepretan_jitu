@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\DetailUser;
 use App\Models\DetailProduct;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -271,6 +272,103 @@ class AuthController extends Controller
             }
         
         }
+    }
+
+    public function requestPayment(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id_user' => 'required',
+            'id_product' => 'required',
+            'tanggal' => 'required',
+            'alamat' => 'required',
+            'bukti_pembayaran' => 'required',
+            'status' => 'required'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'transaksi' => $validator->errors()
+            ],401);
+        }else{
+            $surat = $request->foto; 
+            $surat = str_replace('data:image/png;base64,', '', $surat);
+            $surat = str_replace(' ', '+', $surat);
+            $suratx = md5(uniqid(rand(), true));
+            $suratName = $suratx.'.'.'jpg';
+
+            Storage::disk('product')->put($suratName, base64_decode($surat)); 
+
+            $transaksi = Transaksi::create([
+                'id_user' => $request->input('id_user'),
+                'id_product' => $request->input('id_product'),
+                'tanggal' => $request->input('tanggal'),
+                'alamat' => $request->input('alamat'),
+                'bukti_pembayaran' => "/images/jasa/product/".$suratName,
+                'status' => $request->input('status'),
+            ]);
+
+            if ($transaksi) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => "Transaksi Success",
+                    'transaksi' => $transaksi,
+                ], 200);
+            }else {
+                return response()->json([
+                    'status' => 0,
+                    'message' => "Transaksi Failed"                                         
+                ], 401);
+            }
+        }
+    }
+
+    public function updateProfile(Request $request, $id) {
+
+        $validator = Validator::make($request->all(), [
+            'nama'      => 'nullable',
+            'email'     => 'nullable',
+            'nomor_hp'  => 'nullable',
+            'alamat'    => 'nullable',
+            'foto'   => 'nullable'
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status' => 0,
+                'message' => $validator->errors()
+            ], 200);
+        }
+
+        $foto = $request->foto; 
+        $foto = str_replace('data:image/png;base64,', '', $foto);
+        $foto = str_replace(' ', '+', $foto);
+        $fotox = md5(uniqid(rand(), true));
+        $fotoname = $fotox.'.'.'jpg';
+
+        Storage::disk('upload')->put($fotoname, base64_decode($foto)); 
+
+        $update = DB::table('users')->where('id', $id)->update([
+            'nama'      => $request->nama,
+            'email'     => $request->email,
+            'nomor_hp'  => $request->nomor_hp,
+            'alamat'    => $request->alamat,
+            'foto'    => "/images/jasa/avatar/".$fotoname
+        ]);
+
+        if($update) {
+            $updatedProfile = DB::table('users')->where('id', $id)->first();
+            return response()->json([
+                'message' => 'Data Berhasil Di-Update',
+                'status' => 1,
+                'profilUpdate' => $updatedProfile
+            ], 200);
+        }else {
+            return response()->json([
+                'message' => 'Data Gagal Di-Update',
+                'status' => 0                                        
+            ], 200);
+        }
+        
     }
 
     public function getReview($id_product) {
