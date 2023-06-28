@@ -230,7 +230,6 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'id_user' => 'required',
             'id_product' => 'required',
-            'nama_user' => 'required',
             'review' => 'required',
             'rating' => 'required'
         ]);
@@ -242,7 +241,10 @@ class AuthController extends Controller
             ],401);
         }
 
-        $user = DetailProduct::where('id_user', $request->id_user)->first();
+        $user = DetailProduct::where([
+            ['id_user', $request->id_user],
+            ['id_product', $request->id_product]
+        ])->first();
         
         if($user) {
                 return response()->json([
@@ -262,7 +264,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => 1,
                     'message' => "Berhasil menambahkan Review",
-                    'dataDetailProduct' => $detailProduct,
+                    'dataDetailProductReview' => $detailProduct,
                 ], 200);
             }else {
                 return response()->json([
@@ -372,7 +374,7 @@ class AuthController extends Controller
     }
 
     public function getReview($id_product) {
-        $review = DetailProduct::select('detail_foto_product.id','detail_foto_product.id_product','detail_foto_product.id_user','detail_foto_product.nama_user','detail_foto_product.review','detail_foto_product.rating','users.foto')
+        $review = DetailProduct::select('detail_foto_product.id','detail_foto_product.id_product','detail_foto_product.id_user','users.nama','detail_foto_product.review','detail_foto_product.rating','users.foto')
                     ->join('users', 'users.id', 'detail_foto_product.id_user')
                     ->where('detail_foto_product.id_product','=',$id_product)
                     ->get();
@@ -467,6 +469,29 @@ class AuthController extends Controller
                 'status' => 1,
                 'message' => 'Data Payment',
                 'dataPayment' => $paymentAll
+            ], 200);
+        }
+    }
+
+    public function getPaymentByIdProduct($id,$id_user) {
+        $paymentAll = Transaksi::select('transaksi.id','transaksi.id_user','transaksi.tanggal','transaksi.alamat','transaksi.bukti_pembayaran','transaksi.status','users.nama','users.email','product.judul_product','product.harga_product')
+                    ->join('users', 'users.id', 'transaksi.id_user')
+                    ->join('product','product.id','transaksi.id_product')
+                    ->where('transaksi.id_product','=',$id)
+                    ->where('transaksi.id_user','=',$id_user)
+                    ->get();
+        // var_dump($katalogAll);
+
+        if($paymentAll->isEmpty()) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal Get Data Payment'                                     
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data Payment',
+                'dataPaymentById' => $paymentAll
             ], 200);
         }
     }

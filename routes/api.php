@@ -42,6 +42,7 @@ Route::get('/absensi/historyList', [AbsensiController::class, 'absensiHisList'])
 Route::get('/katalog-all', [AuthController::class, 'getKatalog']);
 Route::get('/katalog/{id}', [AuthController::class, 'getKatalogById']);
 Route::get('/review/{id}', [AuthController::class, 'getReview']);
+Route::get('/payment/{id}/{id_user}', [AuthController::class, 'getPaymentByIdProduct']);
 Route::get('/payment', [AuthController::class, 'getPayment']);
 Route::get('/payment/fotographer', [AuthController::class, 'getPaymentFotoGrapher']);
 Route::post('/payment-update/{id}', [AuthController::class, 'updatePayment']);

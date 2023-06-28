@@ -15,7 +15,6 @@ class DetailProduct extends Model
         'id',
         'id_product',
         'id_user',
-        'nama_user',
         'review',
         'rating'
     ];
