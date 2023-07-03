@@ -36,11 +36,13 @@ Route::post('/absensi/izinApprove_', [AbsensiController::class, 'izinApprove_'])
 Route::get('/absensi/historyr/{date_now}', [AbsensiController::class, 'absensiHis']);
 Route::get('/profile/{id}', [AuthController::class, 'getProfile']);
 Route::post('/profile-update/{id}', [AuthController::class, 'updateProfile']);
+Route::post('/katalog-update/{id}', [AuthController::class, 'updateKatalog']);
 Route::post('/payment', [AuthController::class, 'requestPayment']);
 Route::get('/absensi/izinList', [AbsensiController::class, 'izinList']);
 Route::get('/absensi/historyList', [AbsensiController::class, 'absensiHisList']);
 Route::get('/katalog-all', [AuthController::class, 'getKatalog']);
 Route::get('/katalog/{id}', [AuthController::class, 'getKatalogById']);
+Route::get('/product/{id}', [AuthController::class, 'getProduct']);
 Route::get('/review/{id}', [AuthController::class, 'getReview']);
 Route::get('/payment/{id}/{id_user}', [AuthController::class, 'getPaymentByIdProduct']);
 Route::get('/payment', [AuthController::class, 'getPayment']);
